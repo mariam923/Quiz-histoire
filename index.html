@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz d'Histoire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for additional styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2fe;
+            /* Very light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-y: auto;
+            /* Allow scrolling if content overflows */
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            /* White container */
+            padding: 40px;
+            /* Increased padding */
+            border-radius: 20px;
+            /* More rounded corners */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            /* Stronger, softer shadow */
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            /* Start hidden for fade-in */
+            transform: translateY(30px);
+            /* Start slightly below for slide-up */
+            animation: fadeInSlideUp 0.7s ease-out forwards;
+        }
+
+        @keyframes fadeInSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #bfdbfe;
+            /* Lighter blue background for bar container */
+            border-radius: 10px;
+            margin-bottom: 30px;
+            /* Increased margin */
+            overflow: hidden;
+            /* Hide overflow of the progress bar fill */
+        }
+
+        .progress-bar-fill {
+            height: 12px;
+            /* Slightly thinner bar */
+            width: 0%;
+            /* Start at 0% */
+            background-color: #1d4ed8;
+            /* Darker blue fill */
+            border-radius: 10px;
+            transition: width 0.6s ease-in-out;
+            /* Smooth transition for width */
+        }
+
+        .question {
+            font-size: 1.6rem;
+            /* Slightly larger font for questions */
+            margin-bottom: 25px;
+            /* Increased margin */
+            color: #1f2937;
+            /* Darker text */
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.3s;
+            /* Delay animation slightly */
+            line-height: 1.5;
+            /* Improved readability */
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* Slightly reduced space between buttons */
+            margin-bottom: 25px;
+            /* Increased margin */
+        }
+
+        .option-button {
+            background-color: #eff6ff;
+            /* Very light blue button */
+            color: #1e40af;
+            /* Darker blue text */
+            padding: 18px;
+            /* Increased padding */
+            border-radius: 12px;
+            /* More rounded button corners */
+            border: none;
+            cursor: pointer;
+            font-size: 1.05rem;
+            /* Slightly larger font */
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            /* Added box-shadow transition */
+            text-align: left;
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .option-button:nth-child(1) {
+            animation-delay: 0.4s;
+        }
+
+        /* Stagger animation */
+        .option-button:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .option-button:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .option-button:nth-child(4) {
+            animation-delay: 0.7s;
+        }
+
+
+        .option-button:hover:not(:disabled) {
+            background-color: #dbeafe;
+            /* Slightly darker blue on hover */
+            transform: translateY(-3px);
+            /* More pronounced lift effect */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+            /* Subtle shadow on hover */
+        }
+
+        .option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            /* Slightly more opaque when disabled */
+        }
+
+        .correct {
+            background-color: #a7f3d0;
+            /* Light green for correct (kept for contrast) */
+            color: #065f46;
+            /* Dark green text (kept for contrast) */
+            font-weight: bold;
+            /* Bold text for correct answer */
+        }
+
+        .incorrect {
+            background-color: #fecaca;
+            /* Light red for incorrect (kept for contrast) */
+            color: #991b1b;
+            /* Dark red text (kept for contrast) */
+            font-weight: bold;
+            /* Bold text for incorrect answer */
+        }
+
+        .explanation {
+            margin-top: 20px;
+            /* Increased margin */
+            padding: 20px;
+            /* Increased padding */
+            background-color: #fefce8;
+            /* Lighter yellow for explanation (kept for contrast) */
+            border-left: 6px solid #fcd34d;
+            /* Thicker yellow border (kept for contrast) */
+            color: #854d0e;
+            /* Darker yellow text (kept for contrast) */
+            text-align: left;
+            border-radius: 8px;
+            font-style: italic;
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.8s;
+            /* Delay animation */
+            line-height: 1.5;
+            /* Improved readability */
+        }
+
+        .feedback {
+            margin-top: 20px;
+            /* Increased margin */
+            font-weight: bold;
+            font-size: 1.1rem;
+            /* Slightly larger font */
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.7s;
+            /* Delay animation */
+        }
+
+        .next-button {
+            background-color: #1d4ed8;
+            /* Darker blue button */
+            color: white;
+            padding: 14px 30px;
+            /* Increased padding */
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            /* Added box-shadow transition */
+            margin-top: 30px;
+            /* Increased margin */
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.9s;
+            /* Delay animation */
+        }
+
+        .next-button:hover {
+            background-color: #1e3a8a;
+            /* Even darker blue on hover */
+            transform: translateY(-3px);
+            /* More pronounced lift effect */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+            /* Subtle shadow on hover */
+        }
+
+        .score-container {
+            font-size: 2rem;
+            /* Larger font */
+            font-weight: bold;
+            color: #1e3a8a;
+            /* Darker blue */
+            margin-top: 30px;
+            /* Increased margin */
+            opacity: 0;
+            /* Start hidden for fade-in */
+            animation: fadeIn 0.7s ease-out forwards;
+            animation-delay: 0.5s;
+            /* Delay animation */
+        }
+
+        h1 {
+            color: #1f2937;
+            /* Match question text color */
+        }
+
+        /* Animation for "Bravo!" */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .bravo-animation {
+            animation: pulse 0.8s ease-in-out infinite;
+            /* Pulse animation */
+            color: #065f46;
+            /* Dark green color */
+            font-size: 1.5rem;
+            /* Larger font for Bravo */
+            margin-bottom: 10px;
+            /* Space below Bravo */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="quiz-container">
+        <h1 class="text-2xl font-bold mb-6">Quiz d'Histoire</h1>
+        <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        <div id="question-container">
+            <div id="question" class="question"></div>
+            <div id="options-container" class="options-container">
+            </div>
+            <div id="bravo-message" class="bravo-animation" style="display: none;">Bravo !</div>
+            <div id="feedback" class="feedback"></div>
+            <div id="explanation" class="explanation" style="display: none;"></div>
+            <button id="next-button" class="next-button" style="display: none;">Question Suivante</button>
+        </div>
+        <div id="score-container" class="score-container" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Array of questions, options, correct answer index, and explanation
+        // The correct answer index is 0 for 'a', 1 for 'b', 2 for 'c', 3 for 'd'
+        const questions = [
+            {
+                question: "1. Quel événement est généralement considéré comme le point de départ de la crise économique des années 1930?",
+                options: [
+                    "a) L'invasion de la Pologne par l'Allemagne",
+                    "b) Le krach boursier de Wall Street en 1929",
+                    "c) La signature du Traité de Versailles",
+                    "d) La création de la Société des Nations"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Le krach boursier de Wall Street en octobre 1929 est largement reconnu comme le catalyseur immédiat de la crise économique mondiale des années 1930."
+            },
+            {
+                question: "2. Citez deux causes principales de la crise économique des années 1930.",
+                options: [
+                    "a) La surpopulation et les conflits religieux",
+                    "b) Le krach boursier et la surproduction",
+                    "c) Les épidémies et les catastrophes naturelles",
+                    "d) Le manque de ressources naturelles et les guerres civiles"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La crise a été causée par une combinaison de facteurs, notamment la spéculation boursière excessive ayant mené au krach et une surproduction industrielle et agricole qui n'a pas trouvé de débouchés."
+            },
+            {
+                question: "3. Comment la crise financière américaine de 1929 s'est-elle propagée à l'échelle mondiale?",
+                options: [
+                    "a) Par des traités militaires secrets",
+                    "b) Par le biais du système financier international et du commerce",
+                    "c) Grâce à des migrations massives de population",
+                    "d) Par des découvertes scientifiques majeures"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La crise américaine s'est rapidement étendue à l'Europe et au reste du monde en raison de l'interdépendance des économies à travers les prêts, les investissements et le commerce international."
+            },
+            {
+                question: "4. Donnez un exemple d'une conséquence sociale de la Grande Dépression en Europe.",
+                options: [
+                    "a) Une augmentation massive de la natalité",
+                    "b) Une forte hausse du chômage",
+                    "c) Une amélioration générale des conditions de vie",
+                    "d) Une diminution de la criminalité"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Grande Dépression a entraîné un chômage de masse, plongeant des millions de personnes dans la pauvreté et la misère sociale."
+            },
+            {
+                question: "5. Quel type de politiques économiques les gouvernements ont-ils souvent adopté en réponse à la crise des années 1930?",
+                options: [
+                    "a) Des politiques de libre-échange total",
+                    "b) Des politiques interventionnistes et protectionnistes",
+                    "c) Des politiques de privatisation massive",
+                    "d) Des politiques de désarmement général"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Face à la crise, de nombreux gouvernements ont abandonné le libéralisme économique pour adopter des politiques interventionnistes visant à soutenir l'emploi et l'activité, ainsi que des mesures protectionnistes pour favoriser leur production nationale."
+            },
+            {
+                question: "6. La montée de quelles idéologies politiques a été favorisée par la crise économique des années 1930?",
+                options: [
+                    "a) Le libéralisme et le pacifisme",
+                    "b) Le fascisme et le nazisme",
+                    "c) Le communisme et l'anarchisme",
+                    "d) La social-démocratie et l'écologisme"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La crise économique a créé un terreau fertile pour la montée des idéologies extrémistes comme le fascisme en Italie et le nazisme en Allemagne, qui promettaient de restaurer l'ordre et la prospérité."
+            },
+            {
+                question: "7. Comment les politiques commerciales protectionnistes ont-elles influencé la crise mondiale?",
+                options: [
+                    "a) Elles ont permis une reprise économique rapide",
+                    "b) Elles ont aggravé la crise en réduisant le commerce international",
+                    "c) Elles n'ont eu aucun impact significatif",
+                    "d) Elles ont favorisé la coopération internationale"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Les politiques protectionnistes, en limitant les importations, ont entraîné des représailles de la part d'autres pays, réduisant ainsi le commerce mondial et approfondissant la crise."
+            },
+            {
+                question: "8. Quel a été l'impact du chômage de masse sur les sociétés pendant la Grande Dépression?",
+                options: [
+                    "a) Il a renforcé la cohésion sociale",
+                    "b) Il a conduit à une plus grande confiance dans les gouvernements",
+                    "c) Il a provoqué des troubles sociaux et politiques",
+                    "d) Il a favorisé l'innovation technologique"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: Le chômage de masse a engendré de la pauvreté, des inégalités et un sentiment de désespoir, conduisant à des tensions sociales, des manifestations et une instabilité politique."
+            },
+            {
+                question: "9. Nommez un pays qui a mis en œuvre des politiques notables pour faire face à la crise.",
+                options: [
+                    "a) Le Japon",
+                    "b) Les États-Unis (avec le New Deal)",
+                    "c) La Suisse",
+                    "d) L'Australie"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Les États-Unis, sous la présidence de Franklin D. Roosevelt, ont mis en place le \"New Deal\", un ensemble de programmes visant à relancer l'économie et à fournir une aide sociale."
+            },
+            {
+                question: "10. Quelle leçon économique importante peut-on tirer de la crise des années 1930?",
+                options: [
+                    "a) L'autorégulation des marchés est toujours efficace",
+                    "b) L'importance de la régulation et de l'intervention de l'État en période de crise",
+                    "c) Le libre-échange illimité est la meilleure solution en toutes circonstances",
+                    "d) Les crises économiques sont des phénomènes isolés et rares"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La crise des années 1930 a souligné la nécessité d'une intervention gouvernementale pour stabiliser l'économie, réguler les marchés financiers et protéger les populations en période de difficultés économiques."
+            },
+            {
+                question: "11. Quel traité de la Première Guerre mondiale est souvent cité comme une cause de la Seconde Guerre mondiale?",
+                options: [
+                    "a) Le Traité de Brest-Litovsk",
+                    "b) Le Traité de Versailles",
+                    "c) Le Traité de Trianon",
+                    "d) Le Traité de Saint-Germain-en-Laye"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Le Traité de Versailles, imposé à l'Allemagne après la Première Guerre mondiale, est considéré par de nombreux historiens comme ayant créé un ressentiment et une instabilité qui ont contribué à l'émergence de la Seconde Guerre mondiale."
+            },
+            {
+                question: "12. Citez deux puissances de l'Axe pendant la Seconde Guerre mondiale.",
+                options: [
+                    "a) La France et le Royaume-Uni",
+                    "b) L'Allemagne et le Japon",
+                    "c) Les États-Unis et l'Union Soviétique",
+                    "d) La Chine et l'Italie"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Les principales puissances de l'Axe étaient l'Allemagne nazie, le Japon impérial et l'Italie fasciste."
+            },
+            {
+                question: "13. Quel événement marque le début de la Seconde Guerre mondiale en Europe?",
+                options: [
+                    "a) L'annexion de l'Autriche par l'Allemagne",
+                    "b) L'invasion de la France par l'Allemagne",
+                    "c) L'invasion de la Pologne par l'Allemagne",
+                    "d) L'attaque de Pearl Harbor par le Japon"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: L'invasion de la Pologne par l'Allemagne le 1er septembre 1939 est l'événement traditionnellement considéré comme marquant le début de la Seconde Guerre mondiale en Europe."
+            },
+            {
+                question: "14. Quel était le nom de l'opération d'invasion de l'Union Soviétique par l'Allemagne?",
+                options: [
+                    "a) Opération Overlord",
+                    "b) Opération Barbarossa",
+                    "c) Opération Sealion",
+                    "d) Opération Market Garden"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: L'opération Barbarossa était le nom de code de l'invasion de l'Union Soviétique par l'Allemagne nazie, lancée en juin 1941."
+            },
+            {
+                question: "15. Quelle bataille est considérée comme un tournant majeur de la guerre dans le Pacifique?",
+                options: [
+                    "a) La bataille de Guadalcanal",
+                    "b) La bataille d'Iwo Jima",
+                    "c) La bataille de Midway",
+                    "d) La bataille d'Okinawa"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La bataille de Midway, en juin 1942, est largement considérée comme le tournant de la guerre dans le Pacifique, marquant un coup d'arrêt à l'expansion japonaise."
+            },
+            {
+                question: "16. Quel était le rôle des colonies africaines dans l'effort de guerre pendant la Seconde Guerre mondiale?",
+                options: [
+                    "a) Elles sont restées neutres",
+                    "b) Elles ont fourni des soldats, des ressources et des bases stratégiques",
+                    "c) Elles ont principalement soutenu les puissances de l'Axe",
+                    "d) Elles ont été épargnées par le conflit"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Les colonies africaines ont joué un rôle significatif en fournissant des troupes (comme les tirailleurs sénégalais), des matières premières et des bases pour les Alliés"
+            },
+            {
+                question: "17. Qu'est-ce que l'Holocauste?",
+                options: [
+                    "a) Le bombardement atomique d'Hiroshima et Nagasaki",
+                    "b) La bataille de Stalingrad",
+                    "c) Le génocide des Juifs d'Europe par l'Allemagne nazie",
+                    "d) La conférence de Yalta"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: L'Holocauste, également appelé Shoah, désigne le génocide systématique de six millions de Juifs par le régime nazi pendant la Seconde Guerre mondiale."
+            },
+            {
+                question: "18. Nommez deux conséquences de la Seconde Guerre mondiale.",
+                options: [
+                    "a) La création de l'Union Européenne et la chute du mur de Berlin",
+                    "b) La création de l'ONU et le début de la Guerre Froide",
+                    "c) La découverte de l'Amérique et la Révolution Française",
+                    "d) La Renaissance et les Lumières"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Seconde Guerre mondiale a entraîné la création de l'Organisation des Nations Unies (ONU) pour maintenir la paix et a marqué le début d'une période de tensions géopolitiques entre les États-Unis et l'Union Soviétique, connue sous le nom de Guerre Froide."
+            },
+            {
+                question: "19. Quelle organisation internationale a été créée après la Seconde Guerre mondiale pour maintenir la paix?",
+                options: [
+                    "a) La Société des Nations",
+                    "b) L'Organisation des Nations Unies (ONU)",
+                    "c) L'Organisation du Traité de l'Atlantique Nord (OTAN)",
+                    "d) Le Pacte de Varsovie"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: L'Organisation des Nations Unies (ONU) a été fondée en 1945 dans le but de prévenir de futurs conflits et de promouvoir la coopération internationale."
+            },
+            {
+                question: "20. Quel événement marque la fin de la Seconde Guerre mondiale dans le Pacifique?",
+                options: [
+                    "a) La bataille d'Iwo Jima",
+                    "b) La bataille d'Okinawa",
+                    "c) La capitulation du Japon",
+                    "d) L'attaque de Pearl Harbor"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La Seconde Guerre mondiale dans le Pacifique s'est terminée avec la capitulation du Japon en août 1945, suite aux bombardements atomiques d'Hiroshima et Nagasaki et à l'entrée en guerre de l'Union Soviétique contre le Japon."
+            },
+            {
+                question: "21. Quelle conférence a jeté les bases de la création de l'Organisation des Nations Unies?",
+                options: [
+                    "a) La conférence de Berlin",
+                    "b) La conférence de Munich",
+                    "c) La conférence de San Francisco",
+                    "d) La conférence de Bandung"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La conférence de San Francisco, qui s'est tenue en 1945, a abouti à la signature de la Charte des Nations Unies, établissant officiellement l'organisation."
+            },
+            {
+                question: "22. Quel est l'objectif principal de l'ONU?",
+                options: [
+                    "a) Promouvoir le commerce international",
+                    "b) Maintenir la paix et la sécurité internationales",
+                    "c) Établir un gouvernement mondial unique",
+                    "d) Développer l'énergie nucléaire"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: L'objectif principal de l'ONU est de prévenir les guerres et de maintenir la paix et la sécurité internationales par la coopération entre les nations."
+            },
+            {
+                question: "23. Quelles étaient les deux superpuissances dominantes après la Seconde Guerre mondiale?",
+                options: [
+                    "a) La France et le Royaume-Uni",
+                    "b) L'Allemagne et le Japon",
+                    "c) Les États-Unis et l'Union Soviétique",
+                    "d) La Chine et l'Inde"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: Après la Seconde Guerre mondiale, les États-Unis et l'Union Soviétique ont émergé comme les deux superpuissances mondiales, dominant la scène internationale."
+            },
+            {
+                question: "24. Quelle est la principale différence idéologique entre les États-Unis et l'Union Soviétique pendant la Guerre Froide?",
+                options: [
+                    "a) La religion contre l'athéisme",
+                    "b) La monarchie contre la république",
+                    "c) Le capitalisme et la démocratie libérale contre le communisme et le régime à parti unique",
+                    "d) L'agriculture contre l'industrie"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La Guerre Froide était caractérisée par une opposition idéologique fondamentale entre le modèle capitaliste et démocratique des États-Unis et le modèle communiste et autoritaire de l'Union Soviétique."
+            },
+            {
+                question: "25. Quel système économique international a été établi lors de la conférence de Bretton Woods?",
+                options: [
+                    "a) Le système de l'étalon-or",
+                    "b) Un système basé sur le dollar américain comme monnaie de référence",
+                    "c) Un système de libre-échange total",
+                    "d) Un système de planification centralisée mondiale"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La conférence de Bretton Woods en 1944 a établi un nouveau système monétaire international basé sur la convertibilité des monnaies en dollar américain, lui-même convertible en or."
+            },
+            {
+                question: "26. Quel événement marque le début de la Guerre Froide?",
+                options: [
+                    "a) La conférence de Yalta",
+                    "b) La capitulation de l'Allemagne",
+                    "c) Le discours de Fulton de Winston Churchill sur le \"rideau de fer\"",
+                    "d) La création de l'ONU"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: Bien qu'il n'y ait pas de date unique, le discours de Winston Churchill en 1946 à Fulton, Missouri, où il a évoqué un \"rideau de fer\" divisant l'Europe, est souvent considéré comme marquant le début de la Guerre Froide."
+            },
+            {
+                question: "27. Quel est le rôle du Conseil de Sécurité de l'ONU?",
+                options: [
+                    "a) Gérer les affaires économiques et sociales",
+                    "b) Maintenir la paix et la sécurité internationales",
+                    "c) Promouvoir les droits de l'homme",
+                    "d) Coordonner l'aide humanitaire"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Le Conseil de Sécurité est l'organe de l'ONU chargé principalement du maintien de la paix et de la sécurité internationales. Il peut prendre des décisions contraignantes pour les États membres."
+            },
+            {
+                question: "28. Nommez un conflit majeur qui s'est déroulé pendant les premières années de la Guerre Froide.",
+                options: [
+                    "a) La guerre du Vietnam",
+                    "b) La guerre d'Algérie",
+                    "c) La guerre de Corée",
+                    "d) La guerre des Six Jours"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La guerre de Corée (1950-1953) est un exemple majeur de conflit qui s'est déroulé dans le contexte de la Guerre Froide, opposant indirectement les États-Unis et leurs alliés au bloc communiste soutenu par l'Union Soviétique et la Chine."
+            },
+            {
+                question: "29. Comment la décolonisation a-t-elle affecté l'ONU?",
+                options: [
+                    "a) Elle a diminué le nombre d'États membres",
+                    "b) Elle a renforcé le pouvoir des superpuissances",
+                    "c) Elle a augmenté le nombre d'États membres et a donné plus de poids aux pays du Tiers-Monde",
+                    "d) Elle a conduit à la dissolution de l'organisation"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: La vague de décolonisation a entraîné l'adhésion de nombreux nouveaux États indépendants à l'ONU, modifiant sa composition et donnant une plus grande voix aux pays en développement, souvent regroupés sous le terme de Tiers-Monde."
+            },
+            {
+                question: "30. Quelle déclaration importante relative aux droits de l'homme a été adoptée par l'ONU en 1948?",
+                options: [
+                    "a) La Charte de l'Atlantique",
+                    "b) La Déclaration universelle des droits de l'homme",
+                    "c) La Convention de Genève",
+                    "d) La Déclaration d'Indépendance"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Déclaration universelle des droits de l'homme, adoptée par l'Assemblée générale de l'ONU en 1948, est un document fondamental qui énonce les droits et libertés fondamentaux de tous les êtres humains."
+            },
+            {
+                question: "31. Citez deux facteurs qui ont contribué à la décolonisation après la Seconde Guerre mondiale.",
+                options: [
+                    "a) La prospérité économique des puissances coloniales et la diminution des mouvements nationalistes",
+                    "b) L'affaiblissement des puissances coloniales par la guerre et la montée des mouvements nationalistes",
+                    "c) Un accord entre les superpuissances pour maintenir le statu quo colonial",
+                    "d) La décision des puissances coloniales d'accorder l'indépendance de leur propre initiative"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Seconde Guerre mondiale a affaibli les puissances coloniales européennes, tandis que les mouvements nationalistes africains et asiatiques, souvent renforcés par la guerre, ont intensifié leur lutte pour l'indépendance."
+            },
+            {
+                question: "32. Nommez deux pays africains qui ont obtenu leur indépendance dans les années 1960.",
+                options: [
+                    "a) L'Égypte et l'Afrique du Sud",
+                    "b) Le Ghana et le Nigéria",
+                    "c) L'Éthiopie et le Libéria",
+                    "d) Le Maroc et la Tunisie"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Le Ghana a obtenu son indépendance en 1957 et le Nigéria en 1960. Les années 1960 ont été marquées par une vague d'indépendances en Afrique."
+            },
+            {
+                question: "33. Quelle année la Guinée a-t-elle obtenu son indépendance?",
+                options: [
+                    "a) 1957",
+                    "b) 1958",
+                    "c) 1960",
+                    "d) 1962"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Guinée a proclamé son indépendance le 2 octobre 1958."
+            },
+            {
+                question: "34. Quel dirigeant a joué un rôle clé dans l'indépendance de la Guinée?",
+                options: [
+                    "a) Kwame Nkrumah",
+                    "b) Léopold Sédar Senghor",
+                    "c) Ahmed Sékou Touré",
+                    "d) Jomo Kenyatta"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication: Ahmed Sékou Touré a été une figure centrale du mouvement pour l'indépendance de la Guinée et est devenu son premier président."
+            },
+            {
+                question: "35. Quel événement spécifique a conduit à l'indépendance immédiate de la Guinée?",
+                options: [
+                    "a) Une longue guerre de libération",
+                    "b) Le rejet du référendum de la Communauté française en 1958",
+                    "c) Une décision unilatérale de la France",
+                    "d) Une intervention de l'ONU"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Guinée a été le seul territoire d'Afrique occidentale française à voter \"non\" au référendum proposé par de Gaulle en 1958, ce qui a entraîné son indépendance immédiate."
+            },
+            {
+                question: "36. Quel concept décrit l'influence économique et politique indirecte des anciennes puissances coloniales sur les pays nouvellement indépendants?",
+                options: [
+                    "a) Le colonialisme",
+                    "b) Le néo-colonialisme",
+                    "c) La mondialisation",
+                    "d) La souveraineté"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Le néo-colonialisme désigne les formes indirectes de domination économique et politique que les anciennes puissances coloniales continuent d'exercer sur les pays nouvellement indépendants."
+            },
+            {
+                question: "37. Comment la Guerre Froide a-t-elle influencé le processus de décolonisation?",
+                options: [
+                    "a) Elle a freiné les mouvements d'indépendance",
+                    "b) Elle a parfois conduit les superpuissances à soutenir des mouvements de libération pour affaiblir leurs rivaux",
+                    "c) Elle n'a eu aucun impact sur la décolonisation",
+                    "d) Elle a uniquement profité aux puissances coloniales"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: La Guerre Froide a créé un contexte où les deux superpuissances soutenaient parfois des mouvements de libération nationale afin d'étendre leur influence et d'affaiblir le camp adverse."
+            },
+            {
+                question: "38. Quels types de défis les nations africaines nouvellement indépendantes ont-elles souvent rencontrés?",
+                options: [
+                    "a) Une surabondance de ressources et une stabilité politique immédiate",
+                    "b) Des tensions ethniques héritées des frontières coloniales et des difficultés économiques",
+                    "c) Une intégration régionale facile et une absence de corruption",
+                    "d) Des systèmes politiques démocratiques et des institutions solides dès le départ"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: Les nations africaines post-coloniales ont souvent été confrontées à des défis tels que les divisions ethniques exacerbées par les frontières arbitraires tracées par les colonisateurs, des économies fragiles et une instabilité politique."
+            },
+            {
+                question: "39. Quel rôle l'ONU a-t-elle joué dans la décolonisation?",
+                options: [
+                    "a) Elle a soutenu le maintien des empires coloniaux",
+                    "b) Elle a adopté des résolutions appelant à l'autodétermination et a facilité les transitions vers l'indépendance",
+                    "c) Elle est restée neutre sur la question de la décolonisation",
+                    "d) Elle a utilisé la force militaire pour empêcher l'indépendance"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication: L'ONU a joué un rôle important dans la décolonisation en adoptant des résolutions affirmant le droit des peuples à l'autodétermination et en fournissant une plateforme pour les discussions et les négociations."
+            },
+            {
+                question: "40. Nommez une conséquence à long terme de la décolonisation pour les anciennes puissances coloniales.",
+                options: [
+                    "a) Un renforcement de leur puissance économique et politique mondiale",
+                    "b) Une redéfinition de leur rôle et de leur influence sur la scène internationale",
+                    "c) Une augmentation de leur population grâce à l'immigration des anciens colonisés",
+                    "d) Une stabilité politique intérieure accrue"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La décolonisation a marqué la fin des empires coloniaux européens et a contraint ces puissances à repenser leur place et leur influence dans un monde désormais composé de nations souveraines."
+            },
+            {
+                question: "41. Quelle était la nature du conflit entre les États-Unis et l'Union Soviétique pendant la Guerre Froide?",
+                options: [
+                    "a) Un conflit militaire direct et permanent",
+                    "b) Un conflit idéologique, politique et économique, avec des affrontements indirects",
+                    "c) Une période de coopération et d'amitié",
+                    "d) Uniquement une compétition scientifique et technologique"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La Guerre Froide n'a pas été une guerre directe entre les deux superpuissances, mais plutôt une rivalité intense dans les domaines idéologique, politique, économique et militaire, se manifestant souvent par des conflits par procuration."
+            },
+            {
+                question: "42. Citez deux exemples de la manière dont la Guerre Froide s'est manifestée en Afrique.",
+                options: [
+                    "a) Une augmentation de l'aide humanitaire et des investissements directs étrangers",
+                    "b) Le soutien à des régimes autoritaires alignés et les guerres par procuration",
+                    "c) Une intégration économique régionale accrue et une stabilité politique généralisée",
+                    "d) Un désarmement général et une coopération militaire renforcée"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La Guerre Froide a conduit les superpuissances à soutenir des régimes africains qui partageaient leur idéologie, souvent au détriment de la démocratie, et à s'impliquer dans des conflits par procuration sur le continent."
+            },
+            {
+                question: "43. Qu'est-ce qu'une guerre par procuration? Donnez un exemple en Afrique pendant la Guerre Froide.",
+                options: [
+                    "a) Une guerre menée directement par les superpuissances sur le territoire africain",
+                    "b) Une guerre où les superpuissances soutiennent des factions opposées dans un pays tiers",
+                    "c) Une guerre menée uniquement par des mercenaires",
+                    "d) Une guerre de libération nationale sans aucune influence extérieure"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Une guerre par procuration est un conflit où des puissances externes soutiennent des belligérants opposés. La guerre civile en Angola, où les États-Unis soutenaient l'UNITA et l'Union Soviétique le MPLA, est un exemple de guerre par procuration en Afrique pendant la Guerre Froide."
+            },
+            {
+                question: "44. Quel était le but du Mouvement des Non-Alignés?",
+                options: [
+                    "a) Former une alliance militaire avec l'une des superpuissances",
+                    "b) Promouvoir l'indépendance et la neutralité des pays en développement face à la bipolarisation de la Guerre Froide",
+                    "c) Soutenir activement la politique étrangère des États-Unis",
+                    "d) Rejoindre le Pacte de Varsovie"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le Mouvement des Non-Alignés, né de la conférence de Bandung en 1955, visait à offrir une alternative aux pays en développement en leur permettant de ne pas s'aligner sur l'un ou l'autre des blocs de la Guerre Froide et de défendre leurs propres intérêts."
+            },
+            {
+                question: "45. Nommez deux pays africains qui étaient des membres importants du Mouvement des Non-Alignés.",
+                options: [
+                    "a) L'Afrique du Sud et l'Égypte",
+                    "b) L'Égypte et le Ghana",
+                    "c) Le Maroc et l'Algérie",
+                    "d) Le Nigéria et le Kenya"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'Égypte sous Nasser et le Ghana sous Nkrumah étaient des membres fondateurs et des acteurs importants du Mouvement des Non-Alignés."
+            },
+            {
+                question: "46. Comment la fin de la Guerre Froide a-t-elle affecté l'Afrique?",
+                options: [
+                    "a) Elle a entraîné une stabilité politique immédiate et une prospérité économique généralisée",
+                    "b) Elle a marqué la fin du soutien inconditionnel des superpuissances à certains régimes, mais a aussi parfois exacerbé les conflits internes",
+                    "c) Elle a conduit à une intégration régionale rapide et efficace",
+                    "d) Elle n'a eu aucun impact significatif sur le continent"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La fin de la Guerre Froide a signifié la fin de l'aide militaire et économique des superpuissances à leurs alliés africains, ce qui a parfois déstabilisé des régimes. Cependant, elle a aussi ouvert de nouvelles opportunités pour la démocratisation, bien que les conflits internes aient persisté dans de nombreux pays."
+            },
+            {
+                question: "47. Quel était l'impact de l'aide militaire et économique des superpuissances sur les régimes africains pendant la Guerre Froide?",
+                options: [
+                    "a) Elle a toujours favorisé le développement et la démocratie",
+                    "b) Elle a souvent soutenu des régimes autoritaires en échange d'un alignement stratégique",
+                    "c) Elle a principalement été utilisée pour améliorer les infrastructures et l'éducation",
+                    "d) Elle n'a eu aucun impact sur la nature des régimes africains"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Pendant la Guerre Froide, les superpuissances ont souvent privilégié le soutien à des régimes qui leur étaient fidèles sur le plan idéologique et stratégique, même s'ils étaient autoritaires et ne respectaient pas les droits de l'homme."
+            },
+            {
+                question: "48. Citez une crise majeure de la Guerre Froide qui a eu des répercussions en Afrique.",
+                options: [
+                    "a) La crise de Cuba",
+                    "b) La crise du Congo",
+                    "c) La guerre du Vietnam",
+                    "d) La crise de Berlin"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La crise du Congo au début des années 1960, avec l'assassinat de Patrice Lumumba et l'implication des puissances occidentales et du bloc de l'Est, est un exemple majeur de la manière dont la Guerre Froide s'est manifestée en Afrique."
+            },
+            {
+                question: "49. Comment les rivalités idéologiques de la Guerre Froide ont-elles influencé les conflits internes en Afrique?",
+                options: [
+                    "a) Elles ont toujours favorisé la résolution pacifique des conflits",
+                    "b) Elles ont souvent exacerbé les tensions en fournissant un soutien extérieur aux différentes factions",
+                    "c) Elles ont conduit à une plus grande unité nationale",
+                    "d) Elles n'ont eu aucun impact sur les conflits internes"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Les rivalités idéologiques de la Guerre Froide ont souvent alimenté les conflits internes en Afrique, chaque superpuissance soutenant les groupes qui partaient son idéologie, prolongeant et intensifiant ainsi les guerres civiles."
+            },
+            {
+                question: "50. Quelles sont les traces de la Guerre Froide encore visibles dans les relations internationales africaines aujourd'hui?",
+                options: [
+                    "a) Une alliance militaire unique et forte entre tous les pays africains",
+                    "b) Des divisions héritées du passé, des influences persistantes de certaines puissances et des défis de développement liés à cette période",
+                    "c) Une absence totale d'influence extérieure sur le continent",
+                    "d) Une homogénéisation politique et économique complète"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'héritage de la Guerre Froide se manifeste encore aujourd'hui en Afrique à travers certaines divisions politiques, des liens historiques avec d'anciennes puissances et les défis de développement qui ont été exacerbés par cette période d'instabilité et d'ingérence extérieure."
+            },
+            {
+                question: "51. En quelle année l'Organisation de l'Unité Africaine (OUA) a-t-elle été fondée?",
+                options: [
+                    "a) 1957",
+                    "b) 1960",
+                    "c) 1963",
+                    "d) 1969"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : L'Organisation de l'Unité Africaine (OUA) a été créée en 1963 à Addis-Abeba, en Éthiopie."
+            },
+            {
+                question: "52. Quel était l'objectif principal de la création de l'OUA?",
+                options: [
+                    "a) Former une alliance militaire contre les puissances occidentales",
+                    "b) Promouvoir l'unité et la solidarité entre les États africains, et soutenir la décolonisation",
+                    "c) Établir une monnaie unique pour le continent africain",
+                    "d) Créer un marché commun africain"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'objectif principal de l'OUA était de renforcer l'unité et la solidarité entre les nations africaines nouvellement indépendantes et de soutenir les mouvements de libération dans les territoires encore colonisés."
+            },
+            {
+                question: "53. Citez deux réalisations de l'OUA.",
+                options: [
+                    "a) La création d'une armée africaine unifiée et la résolution de tous les conflits sur le continent",
+                    "b) Le soutien aux mouvements de libération et la promotion de la coopération culturelle et économique",
+                    "c) L'établissement d'un système politique démocratique dans tous les États membres et l'éradication de la pauvreté",
+                    "d) La prévention de tous les coups d'État militaires et la création d'une cour de justice africaine efficace"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'OUA a joué un rôle crucial dans le soutien aux mouvements de libération qui ont conduit à l'indépendance de nombreux pays africains et a favorisé la coopération entre les États membres dans divers domaines."
+            },
+            {
+                question: "54. Quel était l'un des principaux défis rencontrés par l'OUA?",
+                options: [
+                    "a) Un manque de soutien financier de la part des États membres",
+                    "b) Le principe de non-ingérence dans les affaires intérieures des États membres, limitant son action en cas de conflit",
+                    "c) Une opposition forte de la part des organisations internationales",
+                    "d) Un manque de personnel qualifié"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le principe de non-ingérence, bien que visant à protéger la souveraineté des États, a souvent limité la capacité de l'OUA à intervenir efficacement dans les situations de crise et de conflit."
+            },
+            {
+                question: "55. En quelle année l'OUA a-t-elle été remplacée par l'Union Africaine (UA)?",
+                options: [
+                    "a) 1999",
+                    "b) 2002",
+                    "c) 2005",
+                    "d) 2010"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'Union Africaine (UA) a été officiellement lancée en 2002, remplaçant l'Organisation de l'Unité Africaine (OUA)."
+            },
+            {
+                question: "56. Quelle est une différence clé entre l'OUA et l'UA?",
+                options: [
+                    "a) L'OUA était basée à Addis-Abeba, tandis que l'UA a son siège à Nairobi",
+                    "b) L'OUA se concentrait sur la coopération économique, tandis que l'UA met l'accent sur la politique",
+                    "c) L'UA a une plus grande ambition d'intégration politique et économique, et une plus grande capacité d'intervention dans les affaires des États membres en cas de violations graves des droits de l'homme ou de génocide",
+                    "d) L'OUA était composée uniquement d'anciens pays colonisés, tandis que l'UA inclut également les anciennes puissances coloniales"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : L'UA a été créée avec un mandat plus large que l'OUA, visant une intégration plus poussée et se donnant la possibilité d'intervenir dans certaines circonstances pour prévenir les atrocités."
+            },
+            {
+                question: "57. Nommez deux objectifs de l'Union Africaine (UA).",
+                options: [
+                    "a) Maintenir des relations étroites uniquement avec les anciennes puissances coloniales et promouvoir l'utilisation exclusive de leurs langues",
+                    "b) Promouvoir la paix et la sécurité sur le continent, et encourager le développement économique et l'intégration régionale",
+                    "c) Isoler l'Afrique des influences extérieures et établir un système politique unique pour tous les États membres",
+                    "d) Développer l'armement nucléaire et former une armée continentale unifiée sous un commandement unique"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'UA a pour objectifs de favoriser la paix, la sécurité, la stabilité, le développement économique durable et l'intégration du continent africain."
+            },
+            {
+                question: "58. Comment l'UA a-t-elle tenté de résoudre les conflits en Afrique?",
+                options: [
+                    "a) En restant toujours neutre et en refusant toute intervention",
+                    "b) En déployant des missions de maintien de la paix et en facilitant le dialogue et la médiation",
+                    "c) En soutenant systématiquement les régimes en place, quels qu'ils soient",
+                    "d) En faisant appel uniquement à des forces militaires extérieures au continent"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'UA a été active dans la résolution des conflits en Afrique par le biais de missions de paix (comme l'AMISOM en Somalie) et d'efforts diplomatiques."
+            },
+            {
+                question: "59. Quel rôle l'UA joue-t-elle dans la promotion de la coopération économique et de l'intégration régionale en Afrique?",
+                options: [
+                    "a) Elle s'oppose à toute forme d'intégration économique régionale",
+                    "b) Elle encourage la création de zones de libre-échange et soutient des projets d'infrastructure continentaux",
+                    "c) Elle se concentre uniquement sur l'aide humanitaire et néglige les aspects économiques",
+                    "d) Elle laisse chaque État membre gérer son économie de manière isolée"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'UA promeut l'intégration économique à travers des initiatives comme la Zone de Libre-Échange Continentale Africaine (ZLECAf) et soutient des projets visant à améliorer les infrastructures et le commerce intra-africain."
+            },
+            {
+                question: "60. Évaluez l'efficacité de l'UA dans la résolution des défis contemporains auxquels le continent est confronté.",
+                options: [
+                    "a) L'UA a réussi à résoudre tous les problèmes de l'Afrique et est devenue une organisation parfaitement efficace",
+                    "b) L'UA a remporté des succès notables, mais elle est toujours confrontée à des défis importants tels que les conflits persistants, le terrorisme et le manque de ressources financières",
+                    "c) L'UA est une organisation totalement inefficace qui n'a eu aucun impact positif sur le continent",
+                    "d) L'UA est principalement une plateforme symbolique sans pouvoir réel"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Bien que l'UA ait réalisé des progrès dans certains domaines, elle continue de lutter contre des défis majeurs tels que l'instabilité politique, les conflits armés, le terrorisme, la pauvreté et les épidémies, souvent en raison de contraintes financières et de la complexité des situations."
+            },
+            {
+                question: "61. Que signifie l'acronyme CEDEAO?",
+                options: [
+                    "a) Conférence des États Démocratiques d'Afrique de l'Ouest",
+                    "b) Communauté Économique des États de l'Afrique de l'Ouest",
+                    "c) Conseil Économique et Douanier des États d'Afrique de l'Ouest",
+                    "d) Corporation pour le Développement Économique de l'Afrique de l'Ouest"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : CEDEAO est l'acronyme de Communauté Économique des États de l'Afrique de l'Ouest."
+            },
+            {
+                question: "62. Quel est l'objectif principal de la création de la CEDEAO?",
+                options: [
+                    "a) Former une alliance militaire régionale",
+                    "b) Promouvoir l'intégration économique et la coopération entre les États membres de l'Afrique de l'Ouest",
+                    "c) Établir une monnaie unique pour l'Afrique de l'Ouest",
+                    "d) Créer un parlement régional avec des pouvoirs législatifs contraignants"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'objectif principal de la CEDEAO est de favoriser l'intégration économique dans la région de l'Afrique de l'Ouest en supprimant les barrières commerciales et en promouvant la coopération dans divers secteurs."
+            },
+            {
+                question: "63. Nommez deux pays membres de la CEDEAO.",
+                options: [
+                    "a) L'Angola et le Cameroun",
+                    "b) Le Nigéria et le Sénégal",
+                    "c) Le Soudan et l'Éthiopie",
+                    "d) La Somalie et le Kenya"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le Nigéria et le Sénégal sont deux des quinze États membres de la CEDEAO."
+            },
+            {
+                question: "64. Citez deux réalisations de la CEDEAO dans la promotion de l'intégration régionale.",
+                options: [
+                    "a) L'établissement d'une armée régionale unifiée et la résolution de tous les conflits frontaliers",
+                    "b) La facilitation de la libre circulation des personnes et des biens, et la mise en place d'un tarif extérieur commun",
+                    "c) L'éradication complète de la corruption et l'établissement de systèmes politiques démocratiques dans tous les États membres",
+                    "d) La création d'une monnaie unique et l'harmonisation totale des politiques fiscales"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La CEDEAO a réalisé des progrès significatifs dans la facilitation de la libre circulation des citoyens de ses États membres et dans l'établissement d'un tarif extérieur commun, étapes importantes vers l'intégration économique."
+            },
+            {
+                question: "65. Quels sont certains des défis auxquels la CEDEAO est actuellement confrontée?",
+                options: [
+                    "a) Un manque de soutien de la part des populations locales et une absence de coopération entre les États membres",
+                    "b) L'instabilité politique dans certains États membres, la mise en œuvre inégale des politiques communes et les disparités économiques entre les pays",
+                    "c) Une opposition forte de la part des organisations internationales et un manque de ressources naturelles",
+                    "d) Une surabondance de financement et une absence de conflits régionaux"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La CEDEAO est confrontée à des défis tels que les coups d'État militaires dans certains de ses États membres, les difficultés à appliquer uniformément les décisions et les disparités économiques qui freinent l'intégration."
+            },
+            {
+                question: "66. Comment la CEDEAO a-t-elle contribué au développement économique et à la stabilité dans la région de l'Afrique de l'Ouest?",
+                options: [
+                    "a) Elle a principalement agi comme une force militaire sans se soucier du développement économique",
+                    "b) Elle a favorisé le commerce, l'investissement et la coopération régionale, et a parfois joué un rôle dans la résolution des crises politiques",
+                    "c) Elle a entravé le développement économique en imposant des réglementations strictes et en limitant la concurrence",
+                    "d) Elle n'a eu aucun impact significatif sur le développement économique ou la stabilité de la région"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La CEDEAO a contribué au développement économique en facilitant les échanges et en encourageant la coopération. Elle est également intervenue dans des crises politiques pour tenter de rétablir la stabilité."
+            },
+            {
+                question: "67. La CEDEAO vise-t-elle uniquement l'intégration économique? Expliquez.",
+                options: [
+                    "a) Oui, son seul objectif est de créer un marché commun",
+                    "b) Non, la CEDEAO a évolué vers une union économique et politique plus globale, avec des objectifs de coopération dans des domaines comme la paix et la sécurité",
+                    "c) Non, la CEDEAO est principalement une organisation culturelle",
+                    "d) Oui, mais elle a échoué à atteindre même cet objectif"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Initialement axée sur l'économie, la CEDEAO a élargi ses objectifs pour inclure la coopération politique, la sécurité régionale et la promotion de la démocratie."
+            },
+            {
+                question: "68. Quel est l'impact de la CEDEAO sur le commerce et l'investissement entre les États membres?",
+                options: [
+                    "a) Elle a considérablement réduit le commerce et l'investissement en imposant des barrières douanières élevées",
+                    "b) Elle a favorisé une augmentation du commerce et de l'investissement en réduisant les obstacles et en promouvant la coopération",
+                    "c) Elle n'a eu aucun impact significatif sur les flux commerciaux et d'investissement dans la région",
+                    "d) Elle a uniquement bénéficié aux pays les plus riches de la région"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : En réduisant les barrières tarifaires et non tarifaires, la CEDEAO a stimulé le commerce et l'investissement entre ses États membres."
+            },
+            {
+                question: "69. Comment la CEDEAO coopère-t-elle avec d'autres organisations régionales et internationales?",
+                options: [
+                    "a) Elle refuse toute coopération avec d'autres organisations",
+                    "b) Elle collabore avec l'Union Africaine, les Nations Unies et d'autres blocs régionaux sur des questions d'intérêt commun",
+                    "c) Elle est en concurrence directe avec toutes les autres organisations régionales",
+                    "d) Elle se concentre uniquement sur ses propres États membres et ignore le reste du monde"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La CEDEAO travaille en collaboration avec d'autres organisations régionales et internationales pour atteindre ses objectifs et relever les défis communs."
+            },
+            {
+                question: "70. Discutez d'un avantage de l'intégration économique régionale pour les États membres de la CEDEAO.",
+                options: [
+                    "a) Une perte de souveraineté nationale et une augmentation de la concurrence déloyale",
+                    "b) Un élargissement des marchés, une augmentation des opportunités commerciales et un renforcement de la position collective dans les négociations internationales",
+                    "c) Une dépendance accrue aux importations et une diminution de la production locale",
+                    "d) Une homogénéisation culturelle forcée et une perte d'identité nationale"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'intégration économique régionale offre aux États membres de la CEDEAO des avantages tels que l'accès à des marchés plus vastes, la possibilité de réaliser des économies d'échelle et un poids accru dans les affaires internationales."
+            },
+            {
+                question: "71. En quelle année la Guinée a-t-elle accédé à l'indépendance?",
+                options: [
+                    "a) 1957",
+                    "b) 1958",
+                    "c) 1960",
+                    "d) 1962"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La Guinée a proclamé son indépendance le 2 octobre 1958."
+            },
+            {
+                question: "72. Quel était le nom du premier président de la Guinée?",
+                options: [
+                    "a) Lansana Conté",
+                    "b) Alpha Condé",
+                    "c) Ahmed Sékou Touré",
+                    "d) Mamady Doumbouya"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : Ahmed Sékou Touré est devenu le premier président de la République de Guinée après l'indépendance."
+            },
+            {
+                question: "73. Quelle était la principale ressource économique exploitée en Guinée après l'indépendance?",
+                options: [
+                    "a) Le pétrole",
+                    "b) Le diamant",
+                    "c) La bauxite",
+                    "d) L'or"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : La Guinée possède d'importantes réserves de bauxite, qui sont devenues une ressource clé pour son économie après l'indépendance."
+            },
+            {
+                question: "74. Nommez un dirigeant qui a succédé à Sékou Touré à la présidence de la Guinée.",
+                options: [
+                    "a) Alpha Condé",
+                    "b) Lansana Conté",
+                    "c) Mamady Doumbouya",
+                    "d) Cellou Dalein Diallo"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Après la mort de Sékou Touré en 1984, Lansana Conté a pris le pouvoir à la suite d'un coup d'État militaire et est resté président jusqu'à sa mort en 2008."
+            },
+            {
+                question: "75. Quel événement politique majeur a eu lieu en Guinée en 2021?",
+                options: [
+                    "a) Une élection présidentielle pacifique",
+                    "b) Une importante réforme constitutionnelle",
+                    "c) Un coup d'État militaire qui a renversé le président Alpha Condé",
+                    "d) Une période de forte croissance économique"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : En septembre 2021, le président Alpha Condé a été renversé par un coup d'État militaire dirigé par le lieutenant-colonel Mamady Doumbouya."
+            },
+            {
+                question: "76. Comment les relations de la Guinée avec la France ont-elles évolué depuis 1958?",
+                options: [
+                    "a) Elles sont restées extrêmement étroites et amicales",
+                    "b) Elles ont été initialement tendues après l'indépendance, mais se sont normalisées au fil du temps, avec des périodes de coopération et de tension",
+                    "c) Elles ont été rompues définitivement en 1958 et n'ont jamais été rétablies",
+                    "d) La France a continué à exercer un contrôle politique direct sur la Guinée"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Les relations entre la Guinée et la France ont été difficiles immédiatement après l'indépendance en raison du rejet du référendum. La France a retiré son aide, mais les relations se sont progressivement normalisées, bien qu'elles aient connu des hauts et des bas."
+            },
+            {
+                question: "77. Citez un défi politique majeur rencontré par la Guinée depuis son indépendance.",
+                options: [
+                    "a) Une absence totale de partis politiques",
+                    "b) L'instabilité politique, y compris des coups d'État militaires et des périodes de régime autoritaire",
+                    "c) Une démocratie stable et ininterrompue",
+                    "d) Une intégration régionale sans heurts"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La Guinée a connu une histoire politique marquée par l'instabilité, avec plusieurs coups d'État militaires et de longues périodes de régime autoritaire."
+            },
+            {
+                question: "78. Quel rôle l'armée a-t-elle joué dans l'histoire politique de la Guinée indépendante?",
+                options: [
+                    "a) Un rôle purement cérémoniel sans aucune influence politique",
+                    "b) Un rôle significatif, intervenant à plusieurs reprises par des coups d'État pour prendre le pouvoir",
+                    "c) Un rôle limité à la défense du territoire national sans implication dans les affaires politiques",
+                    "d) Un rôle de soutien constant à la démocratie et à l'état de droit"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'armée guinéenne est intervenue à plusieurs reprises dans la vie politique du pays par des coups d'État, notamment en 1984 et en 2021."
+            },
+            {
+                question: "79. Comment l'économie de la Guinée a-t-elle évolué depuis l'indépendance?",
+                options: [
+                    "a) Elle est devenue l'une des plus prospères et diversifiées d'Afrique",
+                    "b) Elle est restée fortement dépendante de l'extraction de la bauxite et a connu des difficultés de développement et de diversification",
+                    "c) Elle s'est principalement développée grâce à l'agriculture et au tourisme",
+                    "d) Elle a adopté un modèle de planification centralisée très réussi"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'économie de la Guinée est restée fortement axée sur l'extraction de la bauxite, et le pays a eu du mal à diversifier son économie et à atteindre un développement socio-économique significatif pour l'ensemble de sa population."
+            },
+            {
+                question: "80. Quel est un défi actuel majeur pour la Guinée?",
+                options: [
+                    "a) Une surpopulation et un manque de ressources naturelles",
+                    "b) La consolidation de la démocratie, la bonne gouvernance et le développement économique inclusif",
+                    "c) Une absence totale de liens avec les pays voisins",
+                    "d) Une économie extrêmement diversifiée et une stabilité politique parfaite"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La Guinée est actuellement confrontée à des défis liés à la transition politique après le coup d'État de 2021, à la mise en place d'une gouvernance démocratique et à la promotion d'un développement économique qui profite à tous les Guinéens."
+            },
+            {
+                question: "81. Citez deux motivations de la colonisation européenne de l'Afrique.",
+                options: [
+                    "a) Uniquement des motivations humanitaires et religieuses",
+                    "b) Des motivations économiques (recherche de matières premières et de marchés) et politiques (prestige national et rivalités entre puissances)",
+                    "c) Principalement le désir de partager les avancées scientifiques et technologiques",
+                    "d) Uniquement la volonté d'abolir l'esclavage en Afrique"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La colonisation européenne de l'Afrique était motivée par des facteurs économiques (exploitation des ressources, nouveaux marchés), politiques (affirmation de la puissance nationale, compétition entre États) et, dans une certaine mesure, par des justifications idéologiques et religieuses."
+            },
+            {
+                question: "82. Décrivez les principales caractéristiques et méthodes de l'administration coloniale en Afrique occidentale française.",
+                options: [
+                    "a) Une administration locale autonome et respectueuse des traditions africaines",
+                    "b) Une administration centralisée dirigée par des fonctionnaires français, avec une exploitation économique et une imposition des populations locales",
+                    "c) Une politique d'égalité totale entre colons et populations africaines",
+                    "d) Un développement rapide des infrastructures et de l'éducation au profit des Africains"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'administration coloniale française en Afrique occidentale était caractérisée par une structure hiérarchique centralisée, où les décisions étaient prises par les autorités françaises. Elle visait principalement l'exploitation économique de la colonie et imposait souvent des travaux forcés et des impôts aux populations locales."
+            },
+            {
+                question: "83. Analysez l'impact à long terme des frontières coloniales sur les nations africaines post-indépendance.",
+                options: [
+                    "a) Elles ont favorisé l'unité nationale en regroupant des populations homogènes",
+                    "b) Elles ont souvent créé des États multinationaux avec des tensions ethniques et des conflits frontaliers",
+                    "c) Elles ont permis une coopération régionale harmonieuse et sans problème",
+                    "d) Elles n'ont eu aucun impact significatif après l'indépendance"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Les frontières tracées arbitrairement par les puissances coloniales ont souvent divisé des groupes ethniques et regroupé des populations diverses au sein des mêmes États, entraînant des tensions et des conflits après l'indépendance."
+            },
+            {
+                question: "84. De quelles manières le colonialisme a-t-il façonné les structures économiques des pays africains?",
+                options: [
+                    "a) Il a favorisé une diversification économique rapide et une industrialisation massive",
+                    "b) Il a souvent mis en place des économies extraverties, dépendantes de l'exportation de matières premières et de l'importation de produits manufacturés",
+                    "c) Il a permis un développement agricole autosuffisant et une forte croissance du secteur tertiaire",
+                    "d) Il n'a eu aucun impact sur les modèles économiques préexistants"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le colonialisme a souvent restructuré les économies africaines pour les intégrer dans le système économique mondial comme fournisseurs de matières premières pour les industries européennes, créant une dépendance économique durable."
+            },
+            {
+                question: "85. Discutez des défis rencontrés par les nations africaines pour surmonter les héritages de la domination coloniale.",
+                options: [
+                    "a) Une absence de ressources naturelles et un manque de main-d'œuvre qualifiée",
+                    "b) Des difficultés à construire une identité nationale unifiée, à développer des institutions démocratiques solides et à diversifier leurs économies",
+                    "c) Une surabondance d'aide internationale et une absence de corruption",
+                    "d) Une intégration régionale très facile et une absence de conflits internes"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Les nations africaines post-coloniales ont été confrontées à de nombreux défis pour surmonter l'héritage du colonialisme, notamment en termes de construction nationale, de développement économique, de consolidation démocratique et de gestion des divisions ethniques."
+            },
+            {
+                question: "86. Comment le colonialisme français a-t-il spécifiquement impacté la langue en Guinée?",
+                options: [
+                    "a) Il a favorisé le développement et l'utilisation exclusive des langues locales",
+                    "b) Il a imposé le français comme langue officielle et d'enseignement, ce qui a persisté après l'indépendance",
+                    "c) Il a conduit à l'adoption de l'anglais comme langue véhiculaire",
+                    "d) Il n'a eu aucun impact sur les pratiques linguistiques locales"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Comme dans de nombreuses autres colonies françaises, le français a été introduit et imposé en Guinée comme langue de l'administration, de l'éducation et du commerce, laissant un héritage linguistique durable."
+            },
+            {
+                question: "87. Discutez d'un impact social du colonialisme en Afrique.",
+                options: [
+                    "a) Un renforcement des structures sociales traditionnelles et une égalité accrue entre les groupes",
+                    "b) La perturbation des structures sociales traditionnelles, la création de nouvelles hiérarchies et des inégalités, et l'introduction de nouvelles valeurs culturelles",
+                    "c) Une amélioration générale de la santé et de l'éducation pour tous les Africains",
+                    "d) Une absence de discrimination et un respect total des droits de l'homme"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le colonialisme a profondément transformé les sociétés africaines en perturbant les structures traditionnelles, en introduisant de nouvelles formes d'organisation sociale, en créant des inégalités et en influençant les valeurs culturelles."
+            },
+            {
+                question: "88. Quel rôle les mouvements de résistance africains ont-ils joué contre le colonialisme?",
+                options: [
+                    "a) Ils ont généralement accepté la domination coloniale sans opposition",
+                    "b) Ils ont lutté activement contre la domination coloniale par diverses formes de résistance, allant de la protestation pacifique à la lutte armée",
+                    "c) Ils ont principalement collaboré avec les autorités coloniales pour obtenir des avantages personnels",
+                    "d) Ils n'ont eu aucun impact significatif sur le processus de décolonisation"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Les mouvements de résistance africains ont joué un rôle essentiel dans la lutte contre le colonialisme, exprimant le désir d'autonomie et d'indépendance et exerçant une pression constante sur les puissances coloniales."
+            },
+            {
+                question: "89. Nommez une manifestation contemporaine de l'héritage colonial en Afrique.",
+                options: [
+                    "a) Une homogénéisation culturelle complète à travers le continent",
+                    "b) La persistance de frontières arbitraires, la dépendance économique vis-à-vis des anciennes puissances coloniales et l'influence des langues européennes",
+                    "c) Une absence totale de conflits internes et de problèmes de gouvernance",
+                    "d) Une industrialisation rapide et une diversification économique réussie dans tous les pays"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'héritage du colonialisme se manifeste encore aujourd'hui à travers les frontières des États africains, les liens économiques persistants avec les anciennes puissances coloniales et l'utilisation des langues européennes comme langues officielles."
+            },
+            {
+                question: "90. Comment le concept de \"néo-colonialisme\" est-il lié à l'héritage du colonialisme?",
+                options: [
+                    "a) Il décrit une période de coopération et d'égalité totale entre les anciennes puissances coloniales et les pays nouvellement indépendants",
+                    "b) Il suggère que même après l'indépendance politique, les anciennes puissances coloniales continuent d'exercer une influence économique et politique sur leurs anciennes colonies",
+                    "c) Il fait référence à une nouvelle forme de colonisation directe par des puissances non européennes",
+                    "d) Il n'a aucun lien avec la période coloniale et décrit un phénomène complètement différent"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : Le néo-colonialisme est une continuation de l'influence des anciennes puissances coloniales, mais par des moyens indirects plutôt que par une domination politique directe."
+            },
+            {
+                question: "91. Donnez une définition du concept de \"civilisation\" et discutez de ses caractéristiques clés.",
+                options: [
+                    "a) Une société primitive sans organisation complexe ni développement culturel",
+                    "b) Une société humaine ayant atteint un certain niveau de développement social, culturel, matériel et technique, caractérisée par une organisation politique, des institutions, des croyances, des valeurs et des réalisations artistiques et scientifiques",
+                    "c) Uniquement les sociétés occidentales qui ont connu la révolution industrielle",
+                    "d) Uniquement les sociétés qui ont développé l'écriture"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La civilisation se réfère généralement à une société complexe avec une organisation sociale, politique et économique développée, ainsi que des réalisations culturelles, scientifiques et techniques."
+            },
+            {
+                question: "92. Nommez un grand empire africain qui existait dans la région de la Guinée.",
+                options: [
+                    "a) L'Empire Songhaï",
+                    "b) L'Empire du Mali",
+                    "c) L'Empire Ashanti",
+                    "d) Le Royaume du Kongo"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'Empire du Mali, qui a prospéré entre le XIIIe et le XVIe siècle, s'étendait sur une vaste région d'Afrique de l'Ouest, incluant une partie de l'actuelle Guinée."
+            },
+            {
+                question: "93. Quelle religion a eu une influence significative sur l'Imamat du Fouta-Djalon?",
+                options: [
+                    "a) Le christianisme",
+                    "b) L'islam",
+                    "c) Les religions traditionnelles africaines",
+                    "d) Le judaïsme"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'Imamat du Fouta-Djalon, qui a existé du XVIIIe au XIXe siècle dans la région de la Guinée, était un État théocratique musulman."
+            },
+            {
+                question: "94. Citez une contribution de l'Empire du Mali.",
+                options: [
+                    "a) L'invention de l'imprimerie",
+                    "b) La construction des pyramides de Gizeh",
+                    "c) Le développement d'un système juridique sophistiqué et la promotion de l'éducation islamique, notamment à Tombouctou",
+                    "d) La découverte de l'Amérique"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : L'Empire du Mali était connu pour son système juridique avancé, sa richesse et son centre d'apprentissage islamique à Tombouctou, qui attirait des érudits de toute l'Afrique et du Moyen-Orient."
+            },
+            {
+                question: "95. Comment les historiens étudient-t-ils les civilisations africaines anciennes?",
+                options: [
+                    "a) Uniquement à travers les témoignages écrits laissés par les colonisateurs européens",
+                    "b) Grâce à une combinaison de sources écrites (arabes notamment), de traditions orales, d'archéologie et de linguistique",
+                    "c) Principalement en se basant sur les mythes et légendes transmis de génération en génération",
+                    "d) Uniquement en étudiant les monuments et les ruines"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'étude des civilisations africaines anciennes repose sur diverses sources, y compris les écrits d'érudits africains et arabes, les traditions orales transmises à travers les générations, les découvertes archéologiques et les analyses linguistiques."
+            },
+            {
+                question: "96. Pourquoi est-il important d'étudier les civilisations africaines?",
+                options: [
+                    "a) Uniquement pour connaître le passé de l'Afrique",
+                    "b) Pour avoir une compréhension plus complète de l'histoire mondiale, reconnaître les contributions de l'Afrique au développement de l'humanité et contrer les préjugés eurocentriques",
+                    "c) Parce que les civilisations africaines sont les plus anciennes et les plus importantes du monde",
+                    "d) Uniquement pour trouver des modèles de développement pour l'Afrique contemporaine"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : L'étude des civilisations africaines est essentielle pour une vision globale de l'histoire, mettant en lumière la richesse et la diversité du patrimoine africain et ses contributions significatives à l'histoire de l'humanité."
+            },
+            {
+                question: "97. Comment les facteurs géographiques ont-ils influencé le développement des civilisations africaines?",
+                options: [
+                    "a) Ils n'ont eu aucune influence significative",
+                    "b) Ils ont façonné les modes de vie, les activités économiques, les réseaux commerciaux et les interactions entre les différentes sociétés africaines",
+                    "c) Ils ont uniquement limité le développement des civilisations africaines",
+                    "d) Ils ont conduit à l'isolement complet des différentes régions du continent"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La géographie de l'Afrique, avec ses différents climats, paysages et ressources, a joué un rôle crucial dans le développement des civilisations, influençant l'agriculture, le commerce, les migrations et les relations entre les peuples."
+            },
+            {
+                question: "98. Quel a été l'impact de la traite négrière sur le développement des civilisations africaines?",
+                options: [
+                    "a) Elle a favorisé la croissance économique et le développement politique",
+                    "b) Elle a eu un impact dévastateur en termes de perte de population, de perturbation des structures sociales et économiques, et de frein au développement",
+                    "c) Elle n'a eu aucun impact significatif sur le continent",
+                    "d) Elle a conduit à une plus grande unité entre les différents royaumes africains"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La traite négrière a eu des conséquences désastreuses pour les sociétés africaines, entraînant une perte massive de vies humaines, des conflits, une instabilité et un retard de développement économique et social."
+            },
+            {
+                question: "99. Nommez une autre civilisation africaine importante en dehors de la région de la Guinée.",
+                options: [
+                    "a) La civilisation inca",
+                    "b) La civilisation maya",
+                    "c) Le Royaume d'Égypte (pharaonique)",
+                    "d) La civilisation romaine"
+                ],
+                correctAnswerIndex: 2,
+                explanation: "Explication : Le Royaume d'Égypte (pharaonique) est une autre civilisation africaine ancienne et importante, connue pour ses réalisations monumentales, son système d'écriture et son organisation politique complexe."
+            },
+            {
+                question: "100. Quelle est l'importance de la préservation du patrimoine culturel africain?",
+                options: [
+                    "a) Uniquement pour attirer les touristes",
+                    "b) Pour maintenir la mémoire historique, renforcer l'identité culturelle, promouvoir la diversité et transmettre les connaissances et les valeurs aux générations futures",
+                    "c) Parce que le patrimoine africain est plus important que celui des autres continents",
+                    "d) Uniquement pour des raisons esthétiques"
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Explication : La préservation du patrimoine culturel africain est essentielle pour sauvegarder l'histoire, renforcer le sentiment d'identité et de fierté, et assurer la transmission des connaissances et des traditions aux générations futures."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answerSelected = false; // Flag to prevent multiple selections per question
+
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const explanationElement = document.getElementById('explanation');
+        const nextButton = document.getElementById('next-button');
+        const scoreContainer = document.getElementById('score-container');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const quizContainer = document.querySelector('.quiz-container'); // Get the main container for animation
+        const bravoMessageElement = document.getElementById('bravo-message'); // Get the bravo message element
+
+        // Function to update the progress bar
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex) / questions.length) * 100; // Adjusted to show progress *before* the last question is answered
+            progressBarFill.style.width = `${progress}%`;
+        }
+
+        // Function to display the current question
+        function displayQuestion() {
+            answerSelected = false; // Reset flag for the new question
+            const currentQuestion = questions[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+
+            // Clear previous options and reset animations
+            optionsContainer.innerHTML = '';
+            feedbackElement.textContent = '';
+            explanationElement.style.display = 'none';
+            nextButton.style.display = 'none';
+            bravoMessageElement.style.display = 'none'; // Hide bravo message
+
+            // Reset and trigger animations for question and options
+            questionElement.style.opacity = 0;
+            questionElement.style.animation = 'none';
+            void questionElement.offsetWidth; // Trigger reflow
+            questionElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.3s';
+
+
+            // Create buttons for each option
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(index));
+                optionsContainer.appendChild(button);
+
+                // Stagger animation for options
+                button.style.opacity = 0;
+                button.style.animation = 'none';
+                void button.offsetWidth; // Trigger reflow
+                button.style.animation = `fadeIn 0.6s ease-out forwards ${0.4 + index * 0.08}s`; /* Slightly faster stagger */
+            });
+
+            updateProgressBar(); // Update progress bar
+        }
+
+        // Function to check the selected answer
+        function checkAnswer(selectedIndex) {
+            if (answerSelected) return; // Prevent multiple clicks
+            answerSelected = true;
+
+            const currentQuestion = questions[currentQuestionIndex];
+            const optionButtons = optionsContainer.querySelectorAll('.option-button');
+            const answerLetters = ['a', 'b', 'c', 'd']; // To get the letter of the answer
+
+            // Disable all option buttons after selection
+            optionButtons.forEach(button => button.disabled = true);
+
+            // Check if the selected answer is correct
+            if (selectedIndex === currentQuestion.correctAnswerIndex) {
+                score++;
+                optionButtons[selectedIndex].classList.add('correct');
+                feedbackElement.textContent = `Correct ! Vous avez choisi la réponse ${answerLetters[selectedIndex].toUpperCase()}. La bonne réponse était bien ${answerLetters[currentQuestion.correctAnswerIndex].toUpperCase()}.`;
+                feedbackElement.style.color = '#065f46'; // Dark green
+                bravoMessageElement.style.display = 'block'; // Show bravo message
+            } else {
+                optionButtons[selectedIndex].classList.add('incorrect');
+                optionButtons[currentQuestion.correctAnswerIndex].classList.add('correct');
+                feedbackElement.textContent = `Incorrect. Vous avez choisi la réponse ${answerLetters[selectedIndex].toUpperCase()}. La bonne réponse était ${answerLetters[currentQuestion.correctAnswerIndex].toUpperCase()}.`;
+                feedbackElement.style.color = '#991b1b'; // Dark red
+                bravoMessageElement.style.display = 'none'; // Hide bravo message if incorrect
+            }
+
+            // Display the explanation with animation
+            explanationElement.textContent = currentQuestion.explanation;
+            explanationElement.style.display = 'block';
+            explanationElement.style.opacity = 0;
+            explanationElement.style.animation = 'none';
+            void explanationElement.offsetWidth; // Trigger reflow
+            explanationElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.8s';
+
+
+            // Show the next button with animation
+            nextButton.style.display = 'block';
+            nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'Voir le Score' : 'Question Suivante';
+            nextButton.style.opacity = 0;
+            nextButton.style.animation = 'none';
+            void nextButton.offsetWidth; // Trigger reflow
+            nextButton.style.animation = 'fadeIn 0.6s ease-out forwards 0.9s';
+
+            // Trigger feedback animation
+            feedbackElement.style.opacity = 0;
+            feedbackElement.style.animation = 'none';
+            void feedbackElement.offsetWidth; // Trigger reflow
+            feedbackElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.7s';
+        }
+
+        // Function to move to the next question or show the score
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        // Function to show the final score
+        function showScore() {
+            questionElement.style.display = 'none';
+            optionsContainer.style.display = 'none';
+            feedbackElement.style.display = 'none';
+            explanationElement.style.display = 'none';
+            nextButton.style.display = 'none';
+            bravoMessageElement.style.display = 'none'; // Hide bravo message
+
+            scoreContainer.textContent = `Votre score final : ${score} sur ${questions.length}`;
+            scoreContainer.style.display = 'block';
+            updateProgressBar(); // Fill the progress bar completely at the end
+
+            // Trigger score animation
+            scoreContainer.style.opacity = 0;
+            scoreContainer.style.animation = 'none';
+            void scoreContainer.offsetWidth; // Trigger reflow
+            scoreContainer.style.animation = 'fadeIn 0.7s ease-out forwards 0.5s';
+        }
+
+        // Event listener for the next button
+        nextButton.addEventListener('click', nextQuestion);
+
+        // Start the quiz when the page loads
+        window.onload = displayQuestion;
+
+    </script>
+</body>
+
+</html>
