@@ -7,11 +7,16 @@
     <title>Quiz d'Histoire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom CSS for additional styling */
+        /* Custom CSS for a clean and modern design with purple theme inspired by the image */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e0f2fe;
-            /* Very light blue background */
+            background: url("333a933a7d7d41f49d3fd6b85b567abb.webp");
+            /* Very light purple gradient */
+            background-size: cover;                 /* Couvre tout l'écran */
+            background-repeat: no-repeat;           /* Ne répète pas l'image */
+            background-position: center center;     /* Centre l'image */
+            height: 100vh;                          /* Hauteur de la fenêtre */
+            margin: 0;   
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,21 +29,101 @@
         .quiz-container {
             background-color: #ffffff;
             /* White container */
-            padding: 40px;
-            /* Increased padding */
-            border-radius: 20px;
-            /* More rounded corners */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            /* Stronger, softer shadow */
-            max-width: 700px;
+            padding: 30px;
+            /* Adjusted padding */
+            border-radius: 16px;
+            /* More rounded corners like the image */
+            box-shadow: 0 10px 30px rgba(103, 58, 183, 0.25);
+            /* Deeper purple shadow */
+            max-width: 500px;
+            /* Slightly narrower container for focus */
             width: 100%;
             text-align: center;
             opacity: 0;
             /* Start hidden for fade-in */
-            transform: translateY(30px);
+            transform: translateY(20px);
             /* Start slightly below for slide-up */
-            animation: fadeInSlideUp 0.7s ease-out forwards;
+            animation: fadeInSlideUp 0.6s ease-out forwards;
+            position: relative;
+            /* Needed for pseudo-elements */
+            overflow: hidden;
+            /* Hide overflowing background elements */
+            z-index: 1;
+            /* Ensure content is above background elements */
         }
+
+        /* Adding subtle background elements (simplified illustration) */
+        .quiz-container::before,
+        .quiz-container::after,
+        .quiz-container .illustration-shape-1,
+        .quiz-container .illustration-shape-2,
+        .quiz-container .illustration-shape-3 {
+            content: '';
+            position: absolute;
+            background: rgba(179, 157, 219, 0.3);
+            /* Light purple with transparency */
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(50px);
+            /* Soft blur effect */
+        }
+
+        .quiz-container::before {
+            width: 180px;
+            height: 180px;
+            top: -60px;
+            left: -60px;
+            background: rgba(179, 157, 219, 0.4);
+            /* Slightly more opaque */
+        }
+
+        .quiz-container::after {
+            width: 160px;
+            height: 160px;
+            bottom: -50px;
+            right: -50px;
+            background: rgba(206, 147, 216, 0.4);
+            /* Another light purple/pink shade, slightly more opaque */
+        }
+
+        /* Additional shapes for more visual interest */
+        .quiz-container .illustration-shape-1 {
+            width: 120px;
+            height: 120px;
+            top: 20%;
+            right: -40px;
+            background: rgba(149, 117, 205, 0.35);
+            /* Medium purple */
+            filter: blur(40px);
+            border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%;
+            /* More organic shape */
+        }
+
+        .quiz-container .illustration-shape-2 {
+            width: 80px;
+            height: 80px;
+            bottom: 10%;
+            left: -20px;
+            background: rgba(103, 58, 183, 0.25);
+            /* Deep purple */
+            filter: blur(30px);
+            border-radius: 60% 40% 30% 70% / 60% 50% 50% 40%;
+            /* Different organic shape */
+        }
+
+        .quiz-container .illustration-shape-3 {
+            width: 90px;
+            height: 90px;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(126, 87, 194, 0.3);
+            /* Medium light purple */
+            filter: blur(45px);
+            border-radius: 30% 70% 50% 50% / 70% 30% 50% 50%;
+            /* Another organic shape */
+        }
+
 
         @keyframes fadeInSlideUp {
             to {
@@ -49,78 +134,90 @@
 
         .progress-bar-container {
             width: 100%;
-            background-color: #bfdbfe;
-            /* Lighter blue background for bar container */
-            border-radius: 10px;
-            margin-bottom: 30px;
-            /* Increased margin */
+            background-color: #e1bee7;
+            /* Light purple background for bar container */
+            border-radius: 6px;
+            margin-bottom: 20px;
+            /* Adjusted margin */
             overflow: hidden;
             /* Hide overflow of the progress bar fill */
+            z-index: 1;
+            /* Ensure it's above background elements */
+            position: relative;
         }
 
         .progress-bar-fill {
-            height: 12px;
-            /* Slightly thinner bar */
+            height: 8px;
+            /* Thinner bar */
             width: 0%;
             /* Start at 0% */
-            background-color: #1d4ed8;
-            /* Darker blue fill */
-            border-radius: 10px;
-            transition: width 0.6s ease-in-out;
+            background-color: #673ab7;
+            /* Deep purple fill */
+            border-radius: 6px;
+            transition: width 0.4s ease-in-out;
             /* Smooth transition for width */
         }
 
         .chapter-title {
-            font-size: 1.8rem;
-            /* Larger font for chapter titles */
-            font-weight: bold;
-            margin-top: 30px;
+            font-size: 1.4rem;
+            /* Adjusted font size */
+            font-weight: 700;
+            /* Bold */
+            margin-top: 20px;
             /* Space above chapter title */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             /* Space below chapter title */
-            color: #1f2937;
-            /* Darker text */
+            color: #4527a0;
+            /* Darker purple color */
             text-align: left;
-            border-bottom: 2px solid #bfdbfe;
+            border-bottom: 1px solid #e1bee7;
             /* Subtle underline */
-            padding-bottom: 10px;
+            padding-bottom: 6px;
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
+            animation: fadeIn 0.5s ease-out forwards;
+            position: relative;
+            z-index: 1;
         }
 
         .score-display {
-            font-size: 1.2rem;
-            /* Font size for current score */
-            font-weight: bold;
-            color: #1e40af;
-            /* Darker blue color */
-            margin-bottom: 20px;
-            /* Space below score */
+            font-size: 1rem;
+            /* Adjusted font size */
+            font-weight: 600;
+            /* Semi-bold */
+            color: #4527a0;
+            /* Darker purple color */
+            margin-bottom: 10px;
+            /* Adjusted margin */
             text-align: right;
             /* Align score to the right */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 0.2s;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.1s;
             /* Delay animation slightly */
+            position: relative;
+            z-index: 1;
         }
 
-
         .question {
-            font-size: 1.6rem;
-            /* Slightly larger font for questions */
-            margin-bottom: 25px;
-            /* Increased margin */
-            color: #1f2937;
-            /* Darker text */
+            font-size: 1.25rem;
+            /* Adjusted font size */
+            margin-bottom: 18px;
+            /* Adjusted margin */
+            color: #311b92;
+            /* Even darker purple text */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 0.3s;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.2s;
             /* Delay animation slightly */
-            line-height: 1.5;
+            line-height: 1.6;
             /* Improved readability */
+            font-weight: 600;
+            /* Semi-bold */
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes fadeIn {
@@ -129,172 +226,196 @@
             }
         }
 
-
         .options-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            /* Slightly reduced space between buttons */
-            margin-bottom: 25px;
-            /* Increased margin */
+            gap: 10px;
+            /* Increased space between buttons */
+            margin-bottom: 20px;
+            /* Adjusted margin */
+            position: relative;
+            z-index: 1;
         }
 
         .option-button {
-            background-color: #eff6ff;
-            /* Very light blue button */
-            color: #1e40af;
-            /* Darker blue text */
-            padding: 18px;
+            background-color: #f3e5f5;
+            /* Very light purple button */
+            color: #4527a0;
+            /* Dark purple text */
+            padding: 14px;
             /* Increased padding */
-            border-radius: 12px;
+            border-radius: 8px;
             /* More rounded button corners */
-            border: none;
+            border: 1px solid #e1bee7;
+            /* Subtle border */
             cursor: pointer;
-            font-size: 1.05rem;
-            /* Slightly larger font */
-            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            /* Added box-shadow transition */
+            font-size: 1rem;
+            /* Adjusted font size */
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
             text-align: left;
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
+            animation: fadeIn 0.5s ease-out forwards;
         }
 
         .option-button:nth-child(1) {
-            animation-delay: 0.4s;
+            animation-delay: 0.3s;
         }
 
         /* Stagger animation */
         .option-button:nth-child(2) {
-            animation-delay: 0.5s;
+            animation-delay: 0.35s;
         }
 
         .option-button:nth-child(3) {
-            animation-delay: 0.6s;
+            animation-delay: 0.4s;
         }
 
         .option-button:nth-child(4) {
-            animation-delay: 0.7s;
+            animation-delay: 0.45s;
         }
 
-
         .option-button:hover:not(:disabled) {
-            background-color: #dbeafe;
-            /* Slightly darker blue on hover */
-            transform: translateY(-3px);
-            /* More pronounced lift effect */
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
-            /* Subtle shadow on hover */
+            background-color: #e1bee7;
+            /* Light purple on hover */
+            border-color: #ce93d8;
+            /* Darker purple border on hover */
+            transform: translateY(-2px);
+            /* Subtle lift effect */
         }
 
         .option-button:disabled {
             cursor: not-allowed;
-            opacity: 0.7;
-            /* Slightly more opaque when disabled */
+            opacity: 0.8;
+            /* Slightly less opaque when disabled */
         }
 
         .correct {
-            background-color: #a7f3d0;
-            /* Light green for correct (kept for contrast) */
-            color: #065f46;
-            /* Dark green text (kept for contrast) */
-            font-weight: bold;
-            /* Bold text for correct answer */
+            background-color: #dcedc8;
+            /* Light green for correct */
+            color: #33691e;
+            /* Dark green text */
+            border-color: #8bc34a;
+            /* Green border */
+            font-weight: 600;
+            /* Semi-bold text for correct answer */
         }
 
         .incorrect {
-            background-color: #fecaca;
-            /* Light red for incorrect (kept for contrast) */
-            color: #991b1b;
-            /* Dark red text (kept for contrast) */
-            font-weight: bold;
-            /* Bold text for incorrect answer */
+            background-color: #ffcdd2;
+            /* Light red for incorrect */
+            color: #c62828;
+            /* Dark red text */
+            border-color: #ef5350;
+            /* Red border */
+            font-weight: 600;
+            /* Semi-bold text for incorrect answer */
         }
 
         .explanation {
-            margin-top: 20px;
-            /* Increased margin */
-            padding: 20px;
-            /* Increased padding */
-            background-color: #fefce8;
-            /* Lighter yellow for explanation (kept for contrast) */
-            border-left: 6px solid #fcd34d;
-            /* Thicker yellow border (kept for contrast) */
-            color: #854d0e;
-            /* Darker yellow text (kept for contrast) */
+            margin-top: 15px;
+            /* Adjusted margin */
+            padding: 15px;
+            /* Adjusted padding */
+            background-color: #fff9c4;
+            /* Light yellow for explanation */
+            border-left: 4px solid #fbc02d;
+            /* Yellow border */
+            color: #f57f17;
+            /* Darker yellow text */
             text-align: left;
-            border-radius: 8px;
+            border-radius: 6px;
             font-style: italic;
+            font-size: 0.9rem;
+            /* Slightly smaller font */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 0.8s;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.6s;
             /* Delay animation */
             line-height: 1.5;
             /* Improved readability */
+            position: relative;
+            z-index: 1;
         }
 
         .feedback {
-            margin-top: 20px;
-            /* Increased margin */
-            font-weight: bold;
-            font-size: 1.1rem;
-            /* Slightly larger font */
+            margin-top: 15px;
+            /* Adjusted margin */
+            font-weight: 700;
+            /* Bold */
+            font-size: 1rem;
+            /* Adjusted font size */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 0.7s;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.5s;
             /* Delay animation */
+            position: relative;
+            z-index: 1;
         }
 
         .next-button {
-            background-color: #1d4ed8;
-            /* Darker blue button */
+            background-color: #5e35b1;
+            /* Medium purple button */
             color: white;
-            padding: 14px 30px;
+            padding: 12px 24px;
             /* Increased padding */
-            border-radius: 10px;
+            border-radius: 8px;
+            /* More rounded corners */
             border: none;
             cursor: pointer;
             font-size: 1.1rem;
-            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            /* Added box-shadow transition */
-            margin-top: 30px;
-            /* Increased margin */
+            /* Slightly larger font */
+            font-weight: 600;
+            /* Semi-bold */
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 20px;
+            /* Adjusted margin */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 0.9s;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.7s;
             /* Delay animation */
+            position: relative;
+            z-index: 1;
         }
 
         .next-button:hover {
-            background-color: #1e3a8a;
-            /* Even darker blue on hover */
-            transform: translateY(-3px);
-            /* More pronounced lift effect */
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
-            /* Subtle shadow on hover */
+            background-color: #512da8;
+            /* Even darker purple on hover */
+            transform: translateY(-2px);
+            /* Subtle lift effect */
         }
 
         .score-container {
-            font-size: 2rem;
-            /* Larger font */
-            font-weight: bold;
-            color: #1e3a8a;
-            /* Darker blue */
-            margin-top: 30px;
-            /* Increased margin */
+            font-size: 1.8rem;
+            /* Larger font size */
+            font-weight: 700;
+            /* Bold */
+            color: #4527a0;
+            /* Darker purple */
+            margin-top: 20px;
+            /* Adjusted margin */
             opacity: 0;
             /* Start hidden for fade-in */
-            animation: fadeIn 0.7s ease-out forwards;
-            animation-delay: 0.5s;
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.4s;
             /* Delay animation */
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
-            color: #1f2937;
+            color: #311b92;
             /* Match question text color */
+            font-size: 1.8rem;
+            /* Larger heading size */
+            font-weight: 700;
+            /* Bold */
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Animation for "Bravo!" */
@@ -305,8 +426,9 @@
             }
 
             50% {
-                transform: scale(1.1);
-                opacity: 0.8;
+                transform: scale(1.05);
+                /* Slightly more pronounced pulse */
+                opacity: 1;
             }
 
             100% {
@@ -316,22 +438,57 @@
         }
 
         .bravo-animation {
-            animation: pulse 0.8s ease-in-out infinite;
-            /* Pulse animation */
-            color: #065f46;
+            animation: pulse 0.7s ease-in-out infinite;
+            /* Slightly slower pulse animation */
+            color: #33691e;
             /* Dark green color */
-            font-size: 1.5rem;
-            /* Larger font for Bravo */
-            margin-bottom: 10px;
-            /* Space below Bravo */
+            font-size: 1.3rem;
+            /* Adjusted font size for Bravo */
+            margin-bottom: 8px;
+            /* Adjusted space below Bravo */
+            font-weight: 700;
+            /* Bold */
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 15px;
+            }
+
+            .chapter-title {
+                font-size: 1.3rem;
+            }
+
+            .question {
+                font-size: 1.1rem;
+            }
+
+            .option-button {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .score-container {
+                font-size: 1.4rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="quiz-container">
-        <h1 class="text-2xl font-bold mb-6">Quiz d'Histoire</h1>
+        <div class="illustration-shape-1"></div>
+        <div class="illustration-shape-2"></div>
+        <div class="illustration-shape-3"></div>
+
+        <h1>Quiz d'Histoire</h1>
         <div class="score-display" id="current-score">Score: 0</div>
         <div class="progress-bar-container">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
@@ -963,7 +1120,7 @@
                     "Charles de Gaulle"
                 ],
                 correctAnswerIndex: 2,
-                explanation: "Explication : La 8ᵉ armée britannique, qui affronta Rommel en Égypte à El-Alamein, était dirigée par le général Sir Bernard Montgomery. Son armée, numériquement et matériellement supérieure à l’Afrika Korps de Rommel, remporta la victoire en octobre 1942, marquant un tournant décisif."
+                explanation: "Explication : La 8ᵉ armée britannique, qui affronta Rommel en Égypte à El-Alamein, était dirigée par le général Sir Bernard Montgomery. Son armée, numériquement et matériellement supérieure à l’Afrika Korps du maréchal Rommel, remporta la victoire en octobre 1942, marquant un tournant décisif."
             },
             {
                 chapter: "Chapitre II : La décolonisation en Asie et en Afrique et l’affirmation du Tiers-Monde",
@@ -1716,7 +1873,8 @@
 
         // Function to update the progress bar
         function updateProgressBar() {
-            const progress = ((currentQuestionIndex) / questions.length) * 100; // Adjusted to show progress *before* the last question is answered
+            // Calculate progress based on completed questions
+            const progress = (currentQuestionIndex / questions.length) * 100;
             progressBarFill.style.width = `${progress}%`;
         }
 
@@ -1733,7 +1891,7 @@
                 chapterTitleElement.style.opacity = 0;
                 chapterTitleElement.style.animation = 'none';
                 void chapterTitleElement.offsetWidth; // Trigger reflow
-                chapterTitleElement.style.animation = 'fadeIn 0.6s ease-out forwards';
+                chapterTitleElement.style.animation = 'fadeIn 0.5s ease-out forwards';
 
                 previousChapter = currentQuestion.chapter; // Update previous chapter
             } else {
@@ -1769,15 +1927,15 @@
             questionElement.style.opacity = 0;
             questionElement.style.animation = 'none';
             void questionElement.offsetWidth; // Trigger reflow
-            questionElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.3s';
+            questionElement.style.animation = 'fadeIn 0.5s ease-out forwards 0.2s'; // Adjusted delay
 
 
             // Create buttons for each option
-            const answerLetters = ['a', 'b', 'c', 'd']; // To get the letter of the answer
+            const answerLetters = ['a', 'b', 'c', 'd']; // To get the letter of the letter of the answer
             currentQuestion.options.forEach((option, index) => {
                 const button = document.createElement('button');
                 button.classList.add('option-button');
-                // Add the letter prefix back to the displayed option
+                /* Add the letter prefix back to the displayed option */
                 button.textContent = `${answerLetters[index]}) ${option.trim()}`; // Trim any leading/trailing whitespace
                 button.addEventListener('click', () => checkAnswer(index));
                 optionsContainer.appendChild(button);
@@ -1786,14 +1944,14 @@
                 button.style.opacity = 0;
                 button.style.animation = 'none';
                 void button.offsetWidth; // Trigger reflow
-                button.style.animation = `fadeIn 0.6s ease-out forwards ${0.4 + index * 0.08}s`; /* Slightly faster stagger */
+                button.style.animation = `fadeIn 0.5s ease-out forwards ${0.3 + index * 0.05}s`; /* Adjusted stagger */
             });
 
             updateProgressBar(); // Update progress bar
             currentScoreElement.style.opacity = 0; // Reset score animation
             currentScoreElement.style.animation = 'none';
             void currentScoreElement.offsetWidth; // Trigger reflow
-            currentScoreElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.2s';
+            currentScoreElement.style.animation = 'fadeIn 0.5s ease-out forwards 0.1s'; // Adjusted delay
         }
 
         // Function to check the selected answer
@@ -1803,7 +1961,7 @@
 
             const currentQuestion = questions[currentQuestionIndex];
             const optionButtons = optionsContainer.querySelectorAll('.option-button');
-            const answerLetters = ['a', 'b', 'c', 'd']; // To get the letter of the answer
+            const answerLetters = ['a', 'b', 'c', 'd']; // To get the letter of the letter of the answer
 
             // Disable all option buttons after selection
             optionButtons.forEach(button => button.disabled = true);
@@ -1814,13 +1972,13 @@
                 currentScoreElement.textContent = `Score: ${score}`; // Update score display
                 optionButtons[selectedIndex].classList.add('correct');
                 feedbackElement.textContent = `Correct ! Vous avez choisi la réponse ${answerLetters[selectedIndex].toUpperCase()}. La bonne réponse était bien ${answerLetters[currentQuestion.correctAnswerIndex].toUpperCase()}.`;
-                feedbackElement.style.color = '#065f46'; // Dark green
+                feedbackElement.style.color = '#33691e'; // Dark green
                 bravoMessageElement.style.display = 'block'; // Show bravo message
             } else {
                 optionButtons[selectedIndex].classList.add('incorrect');
                 optionButtons[currentQuestion.correctAnswerIndex].classList.add('correct');
                 feedbackElement.textContent = `Incorrect. Vous avez choisi la réponse ${answerLetters[selectedIndex].toUpperCase()}. La bonne réponse était ${answerLetters[currentQuestion.correctAnswerIndex].toUpperCase()}.`;
-                feedbackElement.style.color = '#991b1b'; // Dark red
+                feedbackElement.style.color = '#c62828'; // Dark red
                 bravoMessageElement.style.display = 'none'; // Hide bravo message if incorrect
             }
 
@@ -1830,22 +1988,23 @@
             explanationElement.style.opacity = 0;
             explanationElement.style.animation = 'none';
             void explanationElement.offsetWidth; // Trigger reflow
-            explanationElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.8s';
+            explanationElement.style.animation = 'fadeIn 0.5s ease-out forwards 0.6s'; // Adjusted delay
 
 
             // Show the next button with animation
             nextButton.style.display = 'block';
+            // Change button text for the last question
             nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'Voir le Score' : 'Question Suivante';
             nextButton.style.opacity = 0;
             nextButton.style.animation = 'none';
             void nextButton.offsetWidth; // Trigger reflow
-            nextButton.style.animation = 'fadeIn 0.6s ease-out forwards 0.9s';
+            nextButton.style.animation = 'fadeIn 0.5s ease-out forwards 0.7s'; // Adjusted delay
 
             // Trigger feedback animation
             feedbackElement.style.opacity = 0;
             feedbackElement.style.animation = 'none';
             void feedbackElement.offsetWidth; // Trigger reflow
-            feedbackElement.style.animation = 'fadeIn 0.6s ease-out forwards 0.7s';
+            feedbackElement.style.animation = 'fadeIn 0.5s ease-out forwards 0.5s'; // Adjusted delay
         }
 
         // Function to move to the next question or show the score
@@ -1854,31 +2013,28 @@
             if (currentQuestionIndex < questions.length) {
                 displayQuestion();
             } else {
+                // If all questions are answered, show the final score
                 showScore();
             }
         }
 
         // Function to show the final score
         function showScore() {
-            questionElement.style.display = 'none';
-            optionsContainer.style.display = 'none';
-            feedbackElement.style.display = 'none';
-            explanationElement.style.display = 'none';
-            nextButton.style.display = 'none';
-            bravoMessageElement.style.display = 'none'; // Hide bravo message
-            chapterTitleElement.style.display = 'none'; // Hide chapter title at the end
-            currentScoreElement.style.display = 'none'; // Hide current score at the end
+            // Hide quiz elements
+            questionContainer.style.display = 'none'; // Hide the entire question container div
 
-
+            // Show the score container
             scoreContainer.textContent = `Votre score final : ${score} sur ${questions.length}`;
             scoreContainer.style.display = 'block';
-            updateProgressBar(); // Fill the progress bar completely at the end
+
+            // Ensure progress bar is full at the end
+            updateProgressBar();
 
             // Trigger score animation
             scoreContainer.style.opacity = 0;
             scoreContainer.style.animation = 'none';
             void scoreContainer.offsetWidth; // Trigger reflow
-            scoreContainer.style.animation = 'fadeIn 0.7s ease-out forwards 0.5s';
+            scoreContainer.style.animation = 'fadeIn 0.6s ease-out forwards 0.4s'; // Adjusted delay
         }
 
         // Event listener for the next button
